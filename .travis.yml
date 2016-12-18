@@ -22,13 +22,13 @@ notifications:
 
 # After you create the Github repo and add it to Travis, run the
 # travis_pypi_setup.py script to finish PyPI deployment setup
-# deploy:
-#   provider: pypi
-#   distributions: sdist bdist_wheel
-#   user: robin81
-#   password:
-#     secure: PLEASE_REPLACE_ME
-#   on:
-#     tags: true
-#     repo: robin81/file_read_backwards
-#     condition: $TOXENV == py27
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  user: robin81
+  password:
+    secure: LJPgBhMbcmZ2rY5OI5Wc6YD0LskAHl5Titrq385OCsoEQ+m8Up0uabXBVV5aZYarXij3opEk1pou5RTiM1LbpNSsVDkxiqA0QpM8AbcQbsOxYVTZHdux0K66w9i4gyLs+7sOHlfLqCGyAMY+r3ItT6+9FvdSr5OcheIoEJ2uoLLPw0E85JYlrLhPH1zx57Vmj5fxgeXjkJNE6m+tsRiJoh4m6y7M1NpKTEHaoGUgodU65e2EqCp8GYEgbGZGX0uHe6WOnUNy5Rm+zPBuxoKMwERGLWpV1SqcefGYHmd+V6qvV43FFK+LBnjmgsUTQ2eOAxaHK/fQGPGD+CiNQTErviq1lYIGIu3y+dqzEP2nCXZ86kQptcNPp3sV4WajIPWKV0dsVwAcrX8UQazqW9LB/+c25hsHSTJAjRl8TI/PSu7olH18ZwfXeRRJzbRIHFd3zRBq3/KZAdO63EAiFJLERIk7+u/0M4XLFaEN15xfF7Ff6EQztYq37dYmA7i8MslG6lfsLc+bAGC/t7HGFVAP6uGSal+lVLmgy4sguB98IJJlgIDssPExeWBMzFEvQW8+BqthZhLqIDg9lEBI8wY3qWAGr8ZIqgNZZ3jZ6Nl3+0javm5dg+pSJ8riS0V+bfoyALneUvkYnWQerD+GbPxVfIkMDUI+oTjwDAohPOXxLOk=
+  on:
+    tags: true
+    repo: robin81/file_read_backwards
+    condition: $TOXENV == py27
