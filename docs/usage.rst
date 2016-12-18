@@ -4,8 +4,10 @@ Usage
 
 To use file_read_backwards in a project::
 
+    #!/usr/bin/env python
+
     from __future__ import print_function
-    import file_read_backwards
+    from file_read_backwards import FileReadBackwards
 
     f = FileReadBackwards("/tmp/file", encoding="utf-8")
 
