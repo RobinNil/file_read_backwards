@@ -2,7 +2,7 @@
 Usage
 =====
 
-An example of using `file_read_backwards` for python2.7::
+An example of using `file_read_backwards` for `python2.7`::
 
     #!/usr/bin/env python2.7
 
