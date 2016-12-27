@@ -28,11 +28,13 @@ Memory efficient way of reading files line-by-line from the end of file
 Features
 --------
 
-This package is for reading file backward line by line as unicode in a memory efficient manner. Think of it as a `tac` command.
+This package is for reading file backward line by line as unicode in a memory efficient manner. Think of it as a `tac` command for Python.
 
 It currently supports ascii and utf-8 encodings. Other encodings have not been tested.
 
 It supports "\\r", "\\r\\n", and "\\n" as new lines.
+
+Please see :doc:`usage` for examples.
 
 Credits
 ---------
