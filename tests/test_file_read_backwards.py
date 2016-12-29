@@ -30,6 +30,7 @@ except NameError:
 
 
 class TestFileReadBackwards(unittest.TestCase):
+
     """Class that contains various test cases for actual FileReadBackwards usage."""
 
     @staticmethod
@@ -154,6 +155,7 @@ class TestFileReadBackwards(unittest.TestCase):
 
 
 class TestFindFurthestNewLine(unittest.TestCase):
+
     """Class that contains test cases for the _find_furthest_new_line module."""
 
     def setUp(self):  # noqa: N802
@@ -203,6 +205,7 @@ class TestFindFurthestNewLine(unittest.TestCase):
 
 
 class TestRemoveTrailingNewLine(unittest.TestCase):
+
     """Class that contains test cases for _remove_trailing_new_line."""
 
     def test_remove_trailing_new_line_with_empty_byte_string(self):
@@ -228,7 +231,7 @@ class TestRemoveTrailingNewLine(unittest.TestCase):
             self.assertEqual(
                 r,
                 expected_string,
-                msg="Test with {} followed by {} as new line at the end of string".format(repr(expected_string), repr(n)))
+                msg="Test with {} followed by {} as new line at the end of str".format(repr(expected_string), repr(n)))
 
     def test_remove_trailing_new_line_with_non_empty_byte_string_with_variety_of_new_lines_in_the_middle(self):
         """Expect nothing to change because the new line is in the middle."""
@@ -241,6 +244,7 @@ class TestRemoveTrailingNewLine(unittest.TestCase):
 
 
 class TestGetFileSize(unittest.TestCase):
+
     """Class that contains test cases for _get_file_size."""
 
     def test_empty_file(self):
@@ -265,6 +269,7 @@ class TestGetFileSize(unittest.TestCase):
 
 
 class TestIsPartiallyReadNewLine(unittest.TestCase):
+
     """Class that contains test cases for _is_partially_read_new_line."""
 
     def test_when_we_have_a_partially_read_new_line(self):
@@ -277,6 +282,7 @@ class TestIsPartiallyReadNewLine(unittest.TestCase):
 
 
 class TestGetWhatToReadNext(unittest.TestCase):
+
     """Class that contains test cases for what to _get_what_to_read_next."""
 
     def test_with_empty_file(self):
@@ -323,6 +329,7 @@ class TestGetWhatToReadNext(unittest.TestCase):
 
 
 class TestGetNextChunk(unittest.TestCase):
+
     """Class that contains test cases for _get_next_chunk."""
 
     def test_with_empty_file(self):
@@ -345,9 +352,10 @@ class TestGetNextChunk(unittest.TestCase):
         os.unlink(t.name)
 
     def test_with_non_empty_file_where_we_read_more_than_chunk_size(self):
-        """Test with non-empty file where we are expected to read more than chunk size.
+        r"""Test with non-empty file where we are expected to read more than chunk size.
 
-        Note: We read more than specified chunk size because we go further if we hit "\n"."""
+        Note: We read more than specified chunk size because we go further if we hit "\n".
+        """
         with tempfile.NamedTemporaryFile(delete=False) as t:
             t.write(b"abcd\nfg")
         expected_result = (b"d\nfg", 3)
@@ -358,6 +366,7 @@ class TestGetNextChunk(unittest.TestCase):
 
 
 class TestBufferWorkSpace(unittest.TestCase):
+
     """Class that contains test cases for _BufferWorkSpace."""
 
     def test_add_to_empty_buffer_work_space(self):

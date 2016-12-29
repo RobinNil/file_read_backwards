@@ -107,8 +107,7 @@ class _BufferWorkSpace:
         return r
 
     def read_until_yieldable(self):
-        """Read in additional chunks until it is yieldable"""
-
+        """Read in additional chunks until it is yieldable."""
         while not self.yieldable():
             read_content, read_position = _get_next_chunk(self.fp, self.read_position, self.chunk_size)
             self.add_to_buffer(read_content, read_position)
