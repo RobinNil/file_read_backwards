@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Tests for `file_read_backwards` module."""
 
 import io
+import itertools
 import os
 import tempfile
 import unittest
@@ -20,7 +20,7 @@ from file_read_backwards.file_read_backwards import _get_file_size
 from file_read_backwards.file_read_backwards import _is_partially_read_new_line
 from file_read_backwards.file_read_backwards import _get_what_to_read_next
 from file_read_backwards.file_read_backwards import _get_next_chunk
-
+from file_read_backwards.file_read_backwards import supported_encodings
 
 # doing this xrange/range dance so that we don't need to add additional dependencies of future or six modules
 try:
@@ -30,8 +30,7 @@ except NameError:
 
 
 class TestFileReadBackwards(unittest.TestCase):
-
-    """Class that contains test cases for the small module."""
+    """Class that contains various test cases for actual FileReadBackwards usage."""
 
     @staticmethod
     def write(t, s, encoding="utf-8"):
@@ -49,22 +48,25 @@ class TestFileReadBackwards(unittest.TestCase):
             lines_read.appendleft(l)
         self.assertEqual(expected_lines, lines_read)
 
-    def test_file_with_a_single_line(self):
-        """Test a file with a single new line (with variety flavors of newlines)."""
-        for new_line in new_lines:
+    def test_file_with_a_single_new_line_char_with_different_encodings(self):
+        """Test a file with a single new line character."""
+        for encoding, new_line in itertools.product(supported_encodings, new_lines):
             with tempfile.NamedTemporaryFile(delete=False) as t:
-                TestFileReadBackwards.write(t, new_line)
+                TestFileReadBackwards.write(t, new_line, encoding)
             f = FileReadBackwards(t.name)
             expected_lines = deque([""])
             lines_read = deque()
             for l in f:
                 lines_read.appendleft(l)
-            self.assertEqual(expected_lines, lines_read)
+            self.assertEqual(
+                expected_lines,
+                lines_read,
+                msg="Test with {} encoding with {} as newline".format(encoding, repr(new_line)))
             os.unlink(t.name)
 
-    def test_file_with_one_line_accented(self):
-        """Test a file with a single new line (with variety flavors of newlines)."""
-        b = b'Caf\xc3\xa9'
+    def test_file_with_one_line_of_text_with_accented_char_followed_by_a_new_line(self):
+        """Test a file with a single line of text with accented char followed by a new line."""
+        b = b'Caf\xc3\xa9'  # accented e in utf-8
         s = b.decode("utf-8")
         for new_line in new_lines:
             with tempfile.NamedTemporaryFile(delete=False) as t:
@@ -75,39 +77,47 @@ class TestFileReadBackwards(unittest.TestCase):
             lines_read = deque()
             for l in f:
                 lines_read.appendleft(s)
-            self.assertEqual(expected_lines, lines_read)
+            self.assertEqual(expected_lines, lines_read, msg="Test with {} as newline".format(repr(new_line)))
             os.unlink(t.name)
 
-    def test_file_with_one_line(self):
-        """Test a file with just one line of text with various new lines."""
-        for new_line in new_lines:
+    def test_file_with_one_line_of_text_followed_by_a_new_line_with_different_encodings(self):
+        """Test a file with just one line of text followed by a new line."""
+        for encoding, new_line in itertools.product(supported_encodings, new_lines):
             with tempfile.NamedTemporaryFile(delete=False) as t:
-                TestFileReadBackwards.write(t, "something{}".format(new_line))
+                TestFileReadBackwards.write(t, "something{}".format(new_line), encoding)
             f = FileReadBackwards(t.name)
             expected_lines = deque(["something"])
             lines_read = deque()
             for l in f:
                 lines_read.appendleft(l)
-            self.assertEqual(expected_lines, lines_read)
+            self.assertEqual(
+                expected_lines,
+                lines_read,
+                msg="Test with {} encoding with {} as newline".format(encoding, repr(new_line)))
             os.unlink(t.name)
 
-    def test_file_with_new_lines_and_some_characters_in_chunk_size(self):
-        """Test a file with many new lines and some random text of size custom chunk_size."""
+    def test_file_with_varying_number_of_new_lines_and_some_text_in_chunk_size(self):
+        """Test a file with varying number of new lines and text of size custom chunk_size."""
         chunk_size = 3
+        s = "t"
         for number_of_new_lines in xrange(21):
             for new_line in new_lines:  # test with variety of new lines
                 with tempfile.NamedTemporaryFile(delete=False) as t:
                     TestFileReadBackwards.write(t, new_line * number_of_new_lines)
-                    TestFileReadBackwards.write(t, "t" * chunk_size)
+                    TestFileReadBackwards.write(t, s * chunk_size)
                 f = FileReadBackwards(t.name, chunk_size=chunk_size)
                 expected_lines = deque()
                 for _ in xrange(number_of_new_lines):
                     expected_lines.append("")
-                expected_lines.append("t" * chunk_size)
+                expected_lines.append(s * chunk_size)
                 lines_read = deque()
                 for l in f:
                     lines_read.appendleft(l)
-                self.assertEqual(expected_lines, lines_read)
+                self.assertEqual(
+                    expected_lines,
+                    lines_read,
+                    msg="Test with {} of new line {} followed by {} of {}".format(number_of_new_lines, repr(new_line),
+                                                                                  chunk_size, repr(s)))
                 os.unlink(t.name)
 
     def test_file_with_new_lines_and_some_accented_characters_in_chunk_size(self):
@@ -128,7 +138,11 @@ class TestFileReadBackwards(unittest.TestCase):
                 lines_read = deque()
                 for l in f:
                     lines_read.appendleft(l)
-                self.assertEqual(expected_lines, lines_read)
+                self.assertEqual(
+                    expected_lines,
+                    lines_read,
+                    msg="Test with {} of new line {} followed by {} of \\xc3\\xa9".format(number_of_new_lines,
+                                                                                          repr(new_line), chunk_size))
                 os.unlink(t.name)
 
     def test_unsupported_encoding(self):
@@ -140,7 +154,6 @@ class TestFileReadBackwards(unittest.TestCase):
 
 
 class TestFindFurthestNewLine(unittest.TestCase):
-
     """Class that contains test cases for the _find_furthest_new_line module."""
 
     def setUp(self):  # noqa: N802
@@ -168,16 +181,16 @@ class TestFindFurthestNewLine(unittest.TestCase):
             test_string = base_string + n
             expected_value = len(test_string) - 1
             r = _find_furthest_new_line(test_string)
-            self.assertEqual(r, expected_value)
+            self.assertEqual(r, expected_value, msg="Test with {} as new line".format(repr(n)))
 
     def test_find_furthest_new_line_with_bytestring_with_new_line_in_the_middle(self):
-        """Expect return value of of where the newline is at."""
+        """Expect return value pointing to the middle of the test string where the newline is at."""
         base_string = b"SomeRandomCharacters"
         for n in new_lines_bytes:
             test_string = base_string + n + base_string
             expected_value = len(base_string) + len(n) - 1
             r = _find_furthest_new_line(test_string)
-            self.assertEqual(r, expected_value)
+            self.assertEqual(r, expected_value, msg="Test with {} as new line".format(repr(n)))
 
     def test_find_furthest_new_line_with_bytestring_with_new_line_in_the_middle_and_end(self):
         """Expect return value of the last index of the test_string because the new line is at the end."""
@@ -186,11 +199,10 @@ class TestFindFurthestNewLine(unittest.TestCase):
             test_string = base_string + n + base_string + n
             expected_value = len(test_string) - 1
             r = _find_furthest_new_line(test_string)
-            self.assertEqual(r, expected_value)
+            self.assertEqual(r, expected_value, msg="Test with {} as new line".format(repr(n)))
 
 
 class TestRemoveTrailingNewLine(unittest.TestCase):
-
     """Class that contains test cases for _remove_trailing_new_line."""
 
     def test_remove_trailing_new_line_with_empty_byte_string(self):
@@ -213,7 +225,10 @@ class TestRemoveTrailingNewLine(unittest.TestCase):
         for n in new_lines_bytes:
             test_string = expected_string + n
             r = _remove_trailing_new_line(test_string)
-            self.assertEqual(r, expected_string)
+            self.assertEqual(
+                r,
+                expected_string,
+                msg="Test with {} followed by {} as new line at the end of string".format(repr(expected_string), repr(n)))
 
     def test_remove_trailing_new_line_with_non_empty_byte_string_with_variety_of_new_lines_in_the_middle(self):
         """Expect nothing to change because the new line is in the middle."""
@@ -222,11 +237,10 @@ class TestRemoveTrailingNewLine(unittest.TestCase):
             test_string = base_string + n + base_string
             expected_string = test_string
             r = _remove_trailing_new_line(test_string)
-            self.assertEqual(r, expected_string)
+            self.assertEqual(r, expected_string, msg="Test with {} as new line".format(repr(n)))
 
 
 class TestGetFileSize(unittest.TestCase):
-
     """Class that contains test cases for _get_file_size."""
 
     def test_empty_file(self):
@@ -251,7 +265,6 @@ class TestGetFileSize(unittest.TestCase):
 
 
 class TestIsPartiallyReadNewLine(unittest.TestCase):
-
     """Class that contains test cases for _is_partially_read_new_line."""
 
     def test_when_we_have_a_partially_read_new_line(self):
@@ -264,7 +277,6 @@ class TestIsPartiallyReadNewLine(unittest.TestCase):
 
 
 class TestGetWhatToReadNext(unittest.TestCase):
-
     """Class that contains test cases for what to _get_what_to_read_next."""
 
     def test_with_empty_file(self):
@@ -311,7 +323,6 @@ class TestGetWhatToReadNext(unittest.TestCase):
 
 
 class TestGetNextChunk(unittest.TestCase):
-
     """Class that contains test cases for _get_next_chunk."""
 
     def test_with_empty_file(self):
@@ -334,7 +345,9 @@ class TestGetNextChunk(unittest.TestCase):
         os.unlink(t.name)
 
     def test_with_non_empty_file_where_we_read_more_than_chunk_size(self):
-        """Test with non-empty file where we are expected to read more than chunk size."""
+        """Test with non-empty file where we are expected to read more than chunk size.
+
+        Note: We read more than specified chunk size because we go further if we hit "\n"."""
         with tempfile.NamedTemporaryFile(delete=False) as t:
             t.write(b"abcd\nfg")
         expected_result = (b"d\nfg", 3)
@@ -345,7 +358,6 @@ class TestGetNextChunk(unittest.TestCase):
 
 
 class TestBufferWorkSpace(unittest.TestCase):
-
     """Class that contains test cases for _BufferWorkSpace."""
 
     def test_add_to_empty_buffer_work_space(self):
