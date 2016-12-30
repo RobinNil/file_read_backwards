@@ -8,7 +8,7 @@ import os
 
 new_lines = ["\r\n", "\n", "\r"]
 new_lines_bytes = [n.encode("ascii") for n in new_lines]  # we only support encodings that's backward compat with ascii
-supported_encodings = ["utf-8", "ascii"]  # any encodings that are backward compatible with ascii should work
+supported_encodings = ["utf-8", "ascii", "latin-1"]  # any encodings that are backward compatible with ascii should work
 
 
 class FileReadBackwards:
