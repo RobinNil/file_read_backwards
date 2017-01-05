@@ -6,8 +6,8 @@ file_read_backwards
 .. image:: https://img.shields.io/pypi/v/file_read_backwards.svg
         :target: https://pypi.python.org/pypi/file_read_backwards
 
-.. image:: https://img.shields.io/travis/robin81/file_read_backwards.svg
-        :target: https://travis-ci.org/robin81/file_read_backwards
+.. image:: https://img.shields.io/travis/robin81/file_read_backwards.svg?branch=master
+        :target: https://travis-ci.org/robin81/file_read_backwards.svg?branch=master
 
 .. image:: https://readthedocs.org/projects/file-read-backwards/badge/?version=latest
         :target: https://file-read-backwards.readthedocs.io/en/latest/?badge=latest
