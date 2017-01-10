@@ -34,7 +34,7 @@ It currently supports ascii and utf-8 encodings. Other encodings have not been t
 
 It supports "\\r", "\\r\\n", and "\\n" as new lines.
 
-Please see :doc:`usage` for examples.
+Please see Usage section for examples.
 
 Credits
 ---------
