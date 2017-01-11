@@ -10,6 +10,9 @@ new_lines_bytes = [n.encode("ascii") for n in new_lines]  # we only support enco
 
 
 class BufferWorkSpace:
+
+    """It is a helper module for FileReadBackwards."""
+
     def __init__(self, fp, chunk_size):
         """Convention for the data.
 
@@ -24,6 +27,12 @@ class BufferWorkSpace:
         self.chunk_size = chunk_size
 
     def add_to_buffer(self, content, read_position):
+        """Add additional bytes content as read from the read_position.
+
+        Args:
+            content (bytes): data to be added to buffer working BufferWorkSpac.
+            read_position (int): where in the file pointer the data was read from.
+        """
         self.read_position = read_position
         if self.read_buffer is None:
             self.read_buffer = content
