@@ -54,7 +54,7 @@ class TestFileReadBackwards(unittest.TestCase):
             self.assertEqual(
                 expected_lines,
                 lines_read,
-                msg="Test with {} encoding with {} as newline".format(encoding, repr(new_line)))
+                msg="Test with {0} encoding with {1} as newline".format(encoding, repr(new_line)))
             os.unlink(t.name)
 
     def test_file_with_one_line_of_text_with_accented_char_followed_by_a_new_line(self):
@@ -70,14 +70,14 @@ class TestFileReadBackwards(unittest.TestCase):
             lines_read = deque()
             for l in f:
                 lines_read.appendleft(s)
-            self.assertEqual(expected_lines, lines_read, msg="Test with {} as newline".format(repr(new_line)))
+            self.assertEqual(expected_lines, lines_read, msg="Test with {0} as newline".format(repr(new_line)))
             os.unlink(t.name)
 
     def test_file_with_one_line_of_text_followed_by_a_new_line_with_different_encodings(self):
         """Test a file with just one line of text followed by a new line."""
         for encoding, new_line in itertools.product(supported_encodings, new_lines):
             with tempfile.NamedTemporaryFile(delete=False) as t:
-                TestFileReadBackwards.write(t, "something{}".format(new_line), encoding)
+                TestFileReadBackwards.write(t, "something{0}".format(new_line), encoding)
             f = FileReadBackwards(t.name)
             expected_lines = deque(["something"])
             lines_read = deque()
@@ -86,7 +86,7 @@ class TestFileReadBackwards(unittest.TestCase):
             self.assertEqual(
                 expected_lines,
                 lines_read,
-                msg="Test with {} encoding with {} as newline".format(encoding, repr(new_line)))
+                msg="Test with {0} encoding with {1} as newline".format(encoding, repr(new_line)))
             os.unlink(t.name)
 
     def test_file_with_varying_number_of_new_lines_and_some_text_in_chunk_size(self):
@@ -109,7 +109,7 @@ class TestFileReadBackwards(unittest.TestCase):
                 self.assertEqual(
                     expected_lines,
                     lines_read,
-                    msg="Test with {} of new line {} followed by {} of {}".format(number_of_new_lines, repr(new_line),
+                    msg="Test with {0} of new line {1} followed by {2} of {3}".format(number_of_new_lines, repr(new_line),
                                                                                   chunk_size, repr(s)))
                 os.unlink(t.name)
 
@@ -134,7 +134,7 @@ class TestFileReadBackwards(unittest.TestCase):
                 self.assertEqual(
                     expected_lines,
                     lines_read,
-                    msg="Test with {} of new line {} followed by {} of \\xc3\\xa9".format(number_of_new_lines,
+                    msg="Test with {0} of new line {1} followed by {2} of \\xc3\\xa9".format(number_of_new_lines,
                                                                                           repr(new_line), chunk_size))
                 os.unlink(t.name)
 

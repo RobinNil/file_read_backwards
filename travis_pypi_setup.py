@@ -60,7 +60,7 @@ def fetch_public_key(repo):
     keyurl = 'https://api.travis-ci.org/repos/{0}/key'.format(repo)
     data = json.loads(urlopen(keyurl).read().decode())
     if 'key' not in data:
-        errmsg = "Could not find public key for repo: {}.\n".format(repo)
+        errmsg = "Could not find public key for repo: {0}.\n".format(repo)
         errmsg += "Have you already added your GitHub repo to Travis?"
         raise ValueError(errmsg)
     return data['key']
