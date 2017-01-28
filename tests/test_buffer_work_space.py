@@ -48,7 +48,7 @@ class TestFindFurthestNewLine(unittest.TestCase):
             test_string = base_string + n
             expected_value = len(test_string) - 1
             r = _find_furthest_new_line(test_string)
-            self.assertEqual(r, expected_value, msg="Test with {} as new line".format(repr(n)))
+            self.assertEqual(r, expected_value, msg="Test with {0} as new line".format(repr(n)))
 
     def test_find_furthest_new_line_with_bytestring_with_new_line_in_the_middle(self):
         """Expect return value pointing to the middle of the test string where the newline is at."""
@@ -57,7 +57,7 @@ class TestFindFurthestNewLine(unittest.TestCase):
             test_string = base_string + n + base_string
             expected_value = len(base_string) + len(n) - 1
             r = _find_furthest_new_line(test_string)
-            self.assertEqual(r, expected_value, msg="Test with {} as new line".format(repr(n)))
+            self.assertEqual(r, expected_value, msg="Test with {0} as new line".format(repr(n)))
 
     def test_find_furthest_new_line_with_bytestring_with_new_line_in_the_middle_and_end(self):
         """Expect return value of the last index of the test_string because the new line is at the end."""
@@ -66,7 +66,7 @@ class TestFindFurthestNewLine(unittest.TestCase):
             test_string = base_string + n + base_string + n
             expected_value = len(test_string) - 1
             r = _find_furthest_new_line(test_string)
-            self.assertEqual(r, expected_value, msg="Test with {} as new line".format(repr(n)))
+            self.assertEqual(r, expected_value, msg="Test with {0} as new line".format(repr(n)))
 
 
 class TestRemoveTrailingNewLine(unittest.TestCase):
@@ -96,7 +96,7 @@ class TestRemoveTrailingNewLine(unittest.TestCase):
             self.assertEqual(
                 r,
                 expected_string,
-                msg="Test with {} followed by {} as new line at the end of str".format(repr(expected_string), repr(n)))
+                msg="Test with {0} followed by {1} as new line at the end of str".format(repr(expected_string), repr(n)))
 
     def test_remove_trailing_new_line_with_non_empty_byte_string_with_variety_of_new_lines_in_the_middle(self):
         """Expect nothing to change because the new line is in the middle."""
@@ -105,7 +105,7 @@ class TestRemoveTrailingNewLine(unittest.TestCase):
             test_string = base_string + n + base_string
             expected_string = test_string
             r = _remove_trailing_new_line(test_string)
-            self.assertEqual(r, expected_string, msg="Test with {} as new line".format(repr(n)))
+            self.assertEqual(r, expected_string, msg="Test with {0} as new line".format(repr(n)))
 
 
 class TestGetFileSize(unittest.TestCase):

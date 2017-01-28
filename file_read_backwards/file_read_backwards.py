@@ -22,8 +22,8 @@ class FileReadBackwards:
             chunk_size (int): How many bytes to read at a time
         """
         if encoding not in supported_encodings:
-            error_message = "{} encoding was not supported/tested.".format(encoding)
-            error_message += "Supported encodings are '{}'".format(",".join(supported_encodings))
+            error_message = "{0} encoding was not supported/tested.".format(encoding)
+            error_message += "Supported encodings are '{0}'".format(",".join(supported_encodings))
             raise NotImplementedError(error_message)
 
         self.path = path
