@@ -6,6 +6,7 @@ Development Lead
 ----------------
 
 * Robin Robin <robin81@gmail.com>
+* John Leslie <johnaleslie@gmail.com>
 
 Contributors
 ------------
