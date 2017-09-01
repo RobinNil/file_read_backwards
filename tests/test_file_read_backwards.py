@@ -4,6 +4,7 @@
 
 import itertools
 import os
+import platform
 import tempfile
 import unittest
 
@@ -206,6 +207,10 @@ class TestFileReadBackwardsAsContextManager(unittest.TestCase):
             msg="The Context Manager way should behave exactly the same way as without using one."
         )
 
+    @unittest.skipIf(
+        platform.python_implementation() == 'PyPy',
+        "Weak references may stay alive a bit longer with Pypy, so this test is not reliable on it. Source: "
+        "http://doc.pypy.org/en/latest/cpython_differences.html#differences-related-to-garbage-collection-strategies")
     def test_weakref(self):
         with FileReadBackwards(self.temp_file.name) as f:
             it = iter(f)
