@@ -205,6 +205,7 @@ class TestGetNextChunk(unittest.TestCase):
         with io.open(t.name, mode="rb") as fp:
             r = _get_next_chunk(fp, previously_read_position=0, chunk_size=3)
             self.assertEqual(r, expected_result)
+        os.unlink(t.name)
 
     def test_with_non_empty_file(self):
         """Test with non-empty file where we are expected to read specified chunk size."""
@@ -262,6 +263,7 @@ class TestBufferWorkSpace(unittest.TestCase):
                 b = BufferWorkSpace(fp, chunk_size=io.DEFAULT_BUFFER_SIZE)
                 r = b.yieldable()
                 self.assertFalse(r)
+        os.unlink(t.name)
 
     def test_yieldable_for_unexhausted_buffer_space_with_single_new_line(self):
         """Buffer work space with a single new line (with read_position > 0) is not be yieldable."""

@@ -21,12 +21,16 @@ except NameError:
     xrange = range
 
 
+created_files = set()
+
+
 def helper_write(t, s, encoding="utf-8"):
     """A helper method to write out string s in specified encoding."""
     t.write(s.encode(encoding))
 
 
 def helper_create_temp_file(generator=None, encoding='utf-8'):
+    global created_files
     if generator is None:
         generator = ("line {}!\n".format(i) for i in xrange(42))
     temp_file = tempfile.NamedTemporaryFile(delete=False)
@@ -34,6 +38,7 @@ def helper_create_temp_file(generator=None, encoding='utf-8'):
         helper_write(temp_file, line, encoding)
     temp_file.close()
     print('Wrote file {}'.format(temp_file.name))
+    created_files.add(temp_file)
     return temp_file
 
 
@@ -42,20 +47,31 @@ def helper_destroy_temp_file(temp_file):
     os.unlink(temp_file.name)
 
 
+def helper_destroy_temp_files():
+    global created_files
+    while created_files:
+        helper_destroy_temp_file(created_files.pop())
+
+
+def tearDownModule():
+    helper_destroy_temp_files()
+
+
 class TestFileReadBackwards(unittest.TestCase):
 
     """Class that contains various test cases for actual FileReadBackwards usage."""
+    @classmethod
+    def setUpClass(cls):
+        cls.empty_file = helper_create_temp_file(generator=(_ for _ in []))
+        cls.long_file = helper_create_temp_file()
 
-    @staticmethod
-    def write(t, s, encoding="utf-8"):
-        """A helper method to write out string s in specified encoding."""
-        t.write(s.encode(encoding))
+    @classmethod
+    def tearDownClass(cls):
+        helper_destroy_temp_files()
 
     def test_with_completely_empty_file(self):
         """Test with a completely empty file."""
-        with tempfile.NamedTemporaryFile(delete=False) as t:
-            pass
-        f = FileReadBackwards(t.name)
+        f = FileReadBackwards(self.empty_file.name)
         expected_lines = deque()
         lines_read = deque()
         for l in f:
@@ -65,9 +81,8 @@ class TestFileReadBackwards(unittest.TestCase):
     def test_file_with_a_single_new_line_char_with_different_encodings(self):
         """Test a file with a single new line character."""
         for encoding, new_line in itertools.product(supported_encodings, new_lines):
-            with tempfile.NamedTemporaryFile(delete=False) as t:
-                TestFileReadBackwards.write(t, new_line, encoding)
-            f = FileReadBackwards(t.name)
+            temp_file = helper_create_temp_file((l for l in [new_line]), encoding=encoding)
+            f = FileReadBackwards(temp_file.name)
             expected_lines = deque([""])
             lines_read = deque()
             for l in f:
@@ -75,31 +90,26 @@ class TestFileReadBackwards(unittest.TestCase):
             self.assertEqual(
                 expected_lines,
                 lines_read,
-                msg="Test with {0} encoding with {1} as newline".format(encoding, repr(new_line)))
-            os.unlink(t.name)
+                msg="Test with {0} encoding with {1!r} as newline".format(encoding, new_line))
 
     def test_file_with_one_line_of_text_with_accented_char_followed_by_a_new_line(self):
         """Test a file with a single line of text with accented char followed by a new line."""
         b = b'Caf\xc3\xa9'  # accented e in utf-8
         s = b.decode("utf-8")
         for new_line in new_lines:
-            with tempfile.NamedTemporaryFile(delete=False) as t:
-                TestFileReadBackwards.write(t, s)
-                TestFileReadBackwards.write(t, new_line)
-            f = FileReadBackwards(t.name)
+            temp_file = helper_create_temp_file((l for l in [s, new_line]))
+            f = FileReadBackwards(temp_file.name)
             expected_lines = deque([s])
             lines_read = deque()
             for l in f:
                 lines_read.appendleft(s)
-            self.assertEqual(expected_lines, lines_read, msg="Test with {0} as newline".format(repr(new_line)))
-            os.unlink(t.name)
+            self.assertEqual(expected_lines, lines_read, msg="Test with {0!r} as newline".format(new_line))
 
     def test_file_with_one_line_of_text_followed_by_a_new_line_with_different_encodings(self):
         """Test a file with just one line of text followed by a new line."""
         for encoding, new_line in itertools.product(supported_encodings, new_lines):
-            with tempfile.NamedTemporaryFile(delete=False) as t:
-                TestFileReadBackwards.write(t, "something{0}".format(new_line), encoding)
-            f = FileReadBackwards(t.name)
+            temp_file = helper_create_temp_file((l for l in ["something{0}".format(new_line)]), encoding=encoding)
+            f = FileReadBackwards(temp_file.name)
             expected_lines = deque(["something"])
             lines_read = deque()
             for l in f:
@@ -107,8 +117,7 @@ class TestFileReadBackwards(unittest.TestCase):
             self.assertEqual(
                 expected_lines,
                 lines_read,
-                msg="Test with {0} encoding with {1} as newline".format(encoding, repr(new_line)))
-            os.unlink(t.name)
+                msg="Test with {0} encoding with {1!r} as newline".format(encoding, new_line))
 
     def test_file_with_varying_number_of_new_lines_and_some_text_in_chunk_size(self):
         """Test a file with varying number of new lines and text of size custom chunk_size."""
@@ -116,10 +125,8 @@ class TestFileReadBackwards(unittest.TestCase):
         s = "t"
         for number_of_new_lines in xrange(21):
             for new_line in new_lines:  # test with variety of new lines
-                with tempfile.NamedTemporaryFile(delete=False) as t:
-                    TestFileReadBackwards.write(t, new_line * number_of_new_lines)
-                    TestFileReadBackwards.write(t, s * chunk_size)
-                f = FileReadBackwards(t.name, chunk_size=chunk_size)
+                temp_file = helper_create_temp_file((l for l in [new_line * number_of_new_lines, s * chunk_size]))
+                f = FileReadBackwards(temp_file.name, chunk_size=chunk_size)
                 expected_lines = deque()
                 for _ in xrange(number_of_new_lines):
                     expected_lines.append("")
@@ -130,9 +137,8 @@ class TestFileReadBackwards(unittest.TestCase):
                 self.assertEqual(
                     expected_lines,
                     lines_read,
-                    msg="Test with {0} of new line {1} followed by {2} of {3}".format(number_of_new_lines, repr(new_line),
-                                                                                  chunk_size, repr(s)))
-                os.unlink(t.name)
+                    msg="Test with {0} of new line {1!r} followed by {2} of {3!r}".format(number_of_new_lines, new_line,
+                                                                                  chunk_size, s))
 
     def test_file_with_new_lines_and_some_accented_characters_in_chunk_size(self):
         """Test a file with many new lines and a random text of size custom chunk_size."""
@@ -141,10 +147,8 @@ class TestFileReadBackwards(unittest.TestCase):
         s = b.decode("utf-8")
         for number_of_new_lines in xrange(21):
             for new_line in new_lines:  # test with variety of new lines
-                with tempfile.NamedTemporaryFile(delete=False) as t:
-                    TestFileReadBackwards.write(t, new_line * number_of_new_lines)
-                    TestFileReadBackwards.write(t, s * chunk_size)
-                f = FileReadBackwards(t.name, chunk_size=chunk_size)
+                temp_file = helper_create_temp_file((l for l in [new_line * number_of_new_lines, s * chunk_size]))
+                f = FileReadBackwards(temp_file.name, chunk_size=chunk_size)
                 expected_lines = deque()
                 for _ in xrange(number_of_new_lines):
                     expected_lines.append("")
@@ -155,23 +159,16 @@ class TestFileReadBackwards(unittest.TestCase):
                 self.assertEqual(
                     expected_lines,
                     lines_read,
-                    msg="Test with {0} of new line {1} followed by {2} of \\xc3\\xa9".format(number_of_new_lines,
-                                                                                          repr(new_line), chunk_size))
-                os.unlink(t.name)
+                    msg="Test with {0} of new line {1!r} followed by {2} of \\xc3\\xa9".format(number_of_new_lines,
+                                                                                          new_line, chunk_size))
 
     def test_unsupported_encoding(self):
         """Test when users pass in unsupported encoding, NotImplementedError should be thrown."""
-        with tempfile.NamedTemporaryFile(delete=False) as t:
-            pass
         with self.assertRaises(NotImplementedError):
-            _ = FileReadBackwards(t.name, encoding="not-supported-encoding")  # noqa: F841
+            _ = FileReadBackwards(self.empty_file.name, encoding="not-supported-encoding")  # noqa: F841
 
     def test_reusing_iterator(self):
-
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-            for line in ("line {}!\n".format(i) for i in xrange(42)):
-                helper_write(temp_file, line)
-        f = FileReadBackwards(temp_file.name, encoding='utf-8')
+        f = FileReadBackwards(self.long_file.name, encoding='utf-8')
         lines_read = deque()
         for l in f:
             lines_read.appendleft(l)
@@ -183,7 +180,6 @@ class TestFileReadBackwards(unittest.TestCase):
             lines_read2,
             msg="Test that verifies that it creates a new iterator everytime"
         )
-        os.unlink(temp_file.name)
 
 
 class TestFileReadBackwardsAsContextManager(unittest.TestCase):
@@ -193,7 +189,7 @@ class TestFileReadBackwardsAsContextManager(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        helper_destroy_temp_file(cls.temp_file)
+        helper_destroy_temp_files()
 
     def test_behaves_as_classic(self):
         with FileReadBackwards(self.temp_file.name) as f:
@@ -229,7 +225,7 @@ class TestFileReadBackwardsCloseFunctionality(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        helper_destroy_temp_file(cls.temp_file)
+        helper_destroy_temp_files()
 
     def test_close_on_iterator(self):
         with FileReadBackwards(self.temp_file.name) as f:
