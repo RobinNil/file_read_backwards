@@ -30,4 +30,4 @@ deploy:
   on:
     tags: true
     repo: robin81/file_read_backwards
-    condition: $TOXENV == py27
+    condition: $TRAVIS_PYTHON_VERSION == 2.7
