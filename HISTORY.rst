@@ -28,3 +28,8 @@ History
 ------------------
 
 * Include context manager style as it provides cleaner/automatic close functionality
+
+1.2.1 (2017-09-02)
+------------------
+
+* Made doc strings consistent to Google style and some code linting
