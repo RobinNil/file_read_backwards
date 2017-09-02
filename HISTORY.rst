@@ -23,3 +23,8 @@ History
 
 * Documentation re-arrangement. Usage examples are now in README.rst
 * Minor refactoring
+
+1.2.0 (2017-09-01)
+------------------
+
+* Include context manager style as it provides cleaner/automatic close functionality
