@@ -78,9 +78,10 @@ class FileReadBackwardsIterator:
     def __init__(self, fp, encoding, chunk_size):
         """Constructor for FileReadBackwardsIterator
 
-        :param fp: A file
-        :param str encoding: Encoding
-        :param int chunk_size: How many bytes to read at a time
+        Args:
+            fp (File): A file that we wish to start reading backwards from
+            encoding (str): Encoding of the file
+            chunk_size (int): How many bytes to read at a time
         """
         self.path = fp.name
         self.encoding = encoding
@@ -127,5 +128,3 @@ class FileReadBackwardsIterator:
     def close(self):
         """Closes the file handler."""
         self.__fp.close()
-
-
