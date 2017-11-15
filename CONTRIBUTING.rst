@@ -15,7 +15,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/robin81/file_read_backwards/issues.
+Report bugs at https://github.com/RobinNil/file_read_backwards/issues.
 
 If you are reporting a bug, please include:
 
