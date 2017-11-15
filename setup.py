@@ -22,8 +22,8 @@ setup(
     description="Memory efficient way of reading files line-by-line from the end of file",
     long_description=readme + '\n\n' + history,
     author="Robin Robin",
-    author_email='robin81@gmail.com',
-    url='https://github.com/robin81/file_read_backwards',
+    author_email='robinsquare42@gmail.com',
+    url='https://github.com/RobinNil/file_read_backwards',
     packages=[
         'file_read_backwards',
     ],

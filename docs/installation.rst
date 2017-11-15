@@ -32,13 +32,13 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/robin81/file_read_backwards
+    $ git clone git://github.com/RobinNil/file_read_backwards
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/robin81/file_read_backwards/tarball/master
+    $ curl  -OL https://github.com/RobinNil/file_read_backwards/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/robin81/file_read_backwards
-.. _tarball: https://github.com/robin81/file_read_backwards/tarball/master
+.. _Github repo: https://github.com/RobinNil/file_read_backwards
+.. _tarball: https://github.com/RobinNil/file_read_backwards/tarball/master
