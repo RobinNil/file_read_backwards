@@ -33,3 +33,9 @@ History
 ------------------
 
 * Made doc strings consistent to Google style and some code linting
+
+
+1.2.2 (2017-11-19)
+------------------
+
+* Re-release of 1.2.1 for ease of updating pypi page for updated travis & pyup.
