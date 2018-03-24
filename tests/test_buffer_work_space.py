@@ -89,14 +89,14 @@ class TestRemoveTrailingNewLine(unittest.TestCase):
 
     def test_remove_trailing_new_line_with_non_empty_byte_string_with_variety_of_new_lines(self):
         """Expect new lines to be removed at the end of the string."""
-        expected_string = b"Something"
+        expected_str = b"Something"
         for n in new_lines_bytes:
-            test_string = expected_string + n
+            test_string = expected_str + n
             r = _remove_trailing_new_line(test_string)
             self.assertEqual(
                 r,
-                expected_string,
-                msg="Test with {0} followed by {1} as new line at the end of str".format(repr(expected_string), repr(n)))
+                expected_str,
+                msg="Test with {0} followed by {1} as new line at the end of str".format(repr(expected_str), repr(n)))
 
     def test_remove_trailing_new_line_with_non_empty_byte_string_with_variety_of_new_lines_in_the_middle(self):
         """Expect nothing to change because the new line is in the middle."""

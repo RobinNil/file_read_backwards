@@ -4,7 +4,6 @@
 
 import itertools
 import os
-import platform
 import tempfile
 import unittest
 
@@ -139,7 +138,7 @@ class TestFileReadBackwards(unittest.TestCase):
                     expected_lines,
                     lines_read,
                     msg="Test with {0} of new line {1!r} followed by {2} of {3!r}".format(number_of_new_lines, new_line,
-                                                                                  chunk_size, s))
+                                                                                          chunk_size, s))
 
     def test_file_with_new_lines_and_some_accented_characters_in_chunk_size(self):
         """Test a file with many new lines and a random text of size custom chunk_size."""
@@ -161,26 +160,49 @@ class TestFileReadBackwards(unittest.TestCase):
                     expected_lines,
                     lines_read,
                     msg="Test with {0} of new line {1!r} followed by {2} of \\xc3\\xa9".format(number_of_new_lines,
-                                                                                          new_line, chunk_size))
+                                                                                               new_line, chunk_size))
 
     def test_unsupported_encoding(self):
         """Test when users pass in unsupported encoding, NotImplementedError should be thrown."""
         with self.assertRaises(NotImplementedError):
             _ = FileReadBackwards(self.empty_file.name, encoding="not-supported-encoding")  # noqa: F841
 
-    def test_reusing_iterator(self):
-        f = FileReadBackwards(self.long_file.name, encoding='utf-8')
-        lines_read = deque()
-        for l in f:
-            lines_read.appendleft(l)
-        lines_read2 = deque()
-        for l2 in f:
-            lines_read2.appendleft(l2)
-        self.assertEqual(
-            lines_read,
-            lines_read2,
-            msg="Test that verifies that it creates a new iterator everytime"
-        )
+    def test_file_with_one_line_of_text_readline(self):
+        """Test a file with a single line of text followed by a new line."""
+        s = "Line0"
+        for new_line in new_lines:
+            temp_file = helper_create_temp_file((l for l in [s, new_line]))
+            with FileReadBackwards(temp_file.name) as fp:
+                l = fp.readline()
+                expected_line = s + os.linesep
+                self.assertEqual(l, expected_line)
+
+                # the file contains only 1 line
+                second_line = fp.readline()
+                expected_second_line = ""
+                self.assertEqual(second_line, expected_second_line)
+
+    def test_file_with_two_lines_of_text_readline(self):
+        """Test a file with a two lines of text followed by a new line."""
+        line0 = "Line0"
+        line1 = "Line1"
+        for new_line in new_lines:
+            line0_with_n = "{}{}".format(line0, new_line)
+            line1_with_n = "{}{}".format(line1, new_line)
+            temp_file = helper_create_temp_file((l for l in [line0_with_n, line1_with_n]))
+            with FileReadBackwards(temp_file.name) as fp:
+                l = fp.readline()
+                expected_line = line1 + os.linesep
+                self.assertEqual(l, expected_line)
+
+                second_line = fp.readline()
+                expected_second_line = line0 + os.linesep
+                self.assertEqual(second_line, expected_second_line)
+
+                # EOF
+                third_line = fp.readline()
+                expected_third_line = ""
+                self.assertEqual(third_line, expected_third_line)
 
 
 class TestFileReadBackwardsAsContextManager(unittest.TestCase):
@@ -207,21 +229,6 @@ class TestFileReadBackwardsAsContextManager(unittest.TestCase):
             msg="The Context Manager way should behave exactly the same way as without using one."
         )
 
-    @unittest.skipIf(
-        platform.python_implementation() == 'PyPy',
-        "Weak references may stay alive a bit longer with Pypy, so this test is not reliable on it. Source: "
-        "http://doc.pypy.org/en/latest/cpython_differences.html#differences-related-to-garbage-collection-strategies")
-    def test_weakref(self):
-        with FileReadBackwards(self.temp_file.name) as f:
-            it = iter(f)
-            self.assertEqual(len(f._FileReadBackwards__fp_refs), 1,
-                             msg="There should be one ref as one iterator was generated!")
-            del it
-            fps = f._FileReadBackwards__fp_refs
-            self.assertEqual(len(fps), 1, msg="The ref should still be there even though the the iterator was deleted.")
-            fp = fps[0]
-            self.assertIsNone(fp(), msg="The ref should be weak and not keep the object from being collected.")
-
 
 class TestFileReadBackwardsCloseFunctionality(unittest.TestCase):
     @classmethod
@@ -242,6 +249,12 @@ class TestFileReadBackwardsCloseFunctionality(unittest.TestCase):
             it.close()
             self.assertTrue(it.closed, msg="Calling close() on the iterator should close it")
 
+    def test_not_creating_new_iterator(self):
+        with FileReadBackwards(self.temp_file.name) as f:
+            it1 = iter(f)
+            it2 = iter(f)
+            self.assertTrue(it1 is it2, msg="FileReadBackwards will return the same iterator")
+
     def test_close_on_iterator_exhausted(self):
         with FileReadBackwards(self.temp_file.name) as f:
             it = iter(f)
@@ -251,19 +264,17 @@ class TestFileReadBackwardsCloseFunctionality(unittest.TestCase):
 
     def test_close_on_reader_exit(self):
         with FileReadBackwards(self.temp_file.name) as f:
-            it1 = iter(f)
-            it2 = iter(f)
-        self.assertTrue(it1.closed and it2.closed,
-                        msg="All iterators created by a reader should have their fp closed when the reader gets closed.")
+            it = iter(f)
+        self.assertTrue(it.closed,
+                        msg="Iterator created by a reader should have its fp closed when the reader gets closed.")
 
     def test_close_on_reader_explicitly(self):
         f = FileReadBackwards(self.temp_file.name)
-        it1 = iter(f)
-        it2 = iter(f)
-        self.assertFalse(it1.closed or it2.closed, msg="Iterators should not have their fp closed at this point.")
+        it = iter(f)
+        self.assertFalse(it.closed, msg="Iterator should not have its fp closed at this point.")
         f.close()
-        self.assertTrue(it1.closed and it2.closed,
-                        msg="All iterators created by a reader should have their fp closed when the reader closes them.")
+        self.assertTrue(it.closed,
+                        msg="Iterator created by a reader should have its fp closed when the reader closes it.")
 
     def test_close_on_reader_with_already_closed_iterator(self):
         with FileReadBackwards(self.temp_file.name) as f:
@@ -277,5 +288,3 @@ class TestFileReadBackwardsCloseFunctionality(unittest.TestCase):
             it.close()
             for _ in it:
                 self.fail(msg="An iterator should be exhausted when closed.")
-
-

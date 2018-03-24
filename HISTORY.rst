@@ -39,3 +39,12 @@ History
 ------------------
 
 * Re-release of 1.2.1 for ease of updating pypi page for updated travis & pyup.
+
+2.0.0 (2018-03-23)
+------------------
+
+Mimicing Python file object behavior.
+
+* FileReadBackwards no longer creates multiple iterators (a change of behavior from 1.x.y version)
+* Adding readline() function retuns one line at a time with a trailing new line and empty string when it reaches end of file.
+  The fine print: the trailing new line will be `os.linesep` (rather than whichever new line type in the file).
