@@ -49,11 +49,6 @@ An example of using `file_read_backwards` for `python2.7`::
         for l in frb:
             print l
 
-        # do it again
-        for l in frb:
-            print l
-
-
 Another example using `python3.3`::
 
     from file_read_backwards import FileReadBackwards
@@ -64,10 +59,18 @@ Another example using `python3.3`::
         for l in frb:
             print(l)
 
-        # do it again
-        for l in frb:
-            print(l)
 
+Another way to consume the file is via `readline()`, in `python3.3`::
+
+    from file_read_backwards import FileReadBackwards
+
+    with FileReadBackwards("/tmp/file", encoding="utf-8") as frb:
+
+        while True:
+            l = frb.readline()
+            if not l:
+                break
+            print(l, end="")
 
 Credits
 ---------

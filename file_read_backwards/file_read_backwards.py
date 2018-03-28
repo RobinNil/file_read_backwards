@@ -4,7 +4,7 @@
 """FileReadBackwards module."""
 
 import io
-import weakref
+import os
 
 from .buffer_work_space import BufferWorkSpace
 
@@ -15,13 +15,11 @@ class FileReadBackwards:
 
     """Class definition for `FileReadBackwards`.
 
-    A `FileReadBackwards` can spawn several iterators, if need be and each of these `FileReadBackwardsIterator` keep an
-    opened file handler.
+    A `FileReadBackwards` will spawn a `FileReadBackwardsIterator` and keep an opened file handler.
 
-    It can be used as a Context Manager. If done so, when exited, it will close all file handlers that are still opened
-    in iterators it has spawned.
+    It can be used as a Context Manager. If done so, when exited, it will close its file handler.
 
-    In any mode, `close()` can be called to close them all.
+    In any mode, `close()` can be called to close the file handler..
     """
 
     def __init__(self, path, encoding="utf-8", chunk_size=io.DEFAULT_BUFFER_SIZE):
@@ -40,34 +38,32 @@ class FileReadBackwards:
         self.path = path
         self.encoding = encoding.lower()
         self.chunk_size = chunk_size
-        self.__fp_refs = []
+        self.iterator = FileReadBackwardsIterator(io.open(self.path, mode="rb"), self.encoding, self.chunk_size)
 
     def __iter__(self):
-        """Opens a file and returns a reversed iterator on it."""
-        fp = io.open(self.path, mode="rb")
-        self.__fp_refs.append(weakref.ref(fp))
-        return FileReadBackwardsIterator(fp, self.encoding, self.chunk_size)
+        """Return its iterator."""
+        return self.iterator
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Closes all opened file handlers and propagates all exceptions on exit."""
+        """Closes all opened its file handler and propagates all exceptions on exit."""
         self.close()
         return False
 
     def close(self):
-        """Closes all opened file handlers.
+        """Closes all opened it s file handler."""
+        self.iterator.close()
 
-        Moreover, it only keeps internally weakrefs of non-collected items.
-        """
-        new_fp_refs = []
-        for fp_ref in self.__fp_refs:
-            fp = fp_ref()
-            if fp is not None:
-                fp.close()
-                new_fp_refs.append(fp_ref)
-        self.__fp_refs = new_fp_refs
+    def readline(self):
+        """Return a line content (with a trailing newline) if there are content. Return '' otherwise."""
+
+        try:
+            r = next(self.iterator) + os.linesep
+            return r
+        except StopIteration:
+            return ""
 
 
 class FileReadBackwardsIterator:
