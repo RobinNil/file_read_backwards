@@ -49,7 +49,7 @@ An example of using `file_read_backwards` for `python2.7`::
         for l in frb:
             print l
 
-Another example using `python3.3`::
+Another example using `python3.4`::
 
     from file_read_backwards import FileReadBackwards
 
