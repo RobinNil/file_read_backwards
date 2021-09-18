@@ -17,7 +17,7 @@ test_requirements = [
 ]
 
 setup(
-    name='file_read_backwards',
+    name='file-read-backwards',
     version='2.0.0',
     description="Memory efficient way of reading files line-by-line from the end of file",
     long_description=readme + '\n\n' + history,
@@ -33,7 +33,7 @@ setup(
     install_requires=requirements,
     license="MIT license",
     zip_safe=False,
-    keywords='file_read_backwards',
+    keywords='file-read-backwards',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
