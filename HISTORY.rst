@@ -48,3 +48,8 @@ Mimicing Python file object behavior.
 * FileReadBackwards no longer creates multiple iterators (a change of behavior from 1.x.y version)
 * Adding readline() function retuns one line at a time with a trailing new line and empty string when it reaches end of file.
   The fine print: the trailing new line will be `os.linesep` (rather than whichever new line type in the file).
+
+3.0.0 (2023-03-29)
+------------------
+
+* Officially support Python 3.7 - 3.11.
