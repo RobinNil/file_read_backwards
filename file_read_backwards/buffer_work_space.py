@@ -59,15 +59,15 @@ class BufferWorkSpace:
 
         Precondition: self.yieldable() must be True
         """
-        assert(self.yieldable())
+        assert(self.yieldable())  # noqa: E275
 
         t = _remove_trailing_new_line(self.read_buffer)
         i = _find_furthest_new_line(t)
 
         if i >= 0:
-            l = i + 1
-            after_new_line = slice(l, None)
-            up_to_include_new_line = slice(0, l)
+            delimiter = i + 1
+            after_new_line = slice(delimiter, None)
+            up_to_include_new_line = slice(0, delimiter)
             r = t[after_new_line]
             self.read_buffer = t[up_to_include_new_line]
         else:  # the case where we have read in entire file and at the "last" line
@@ -143,8 +143,8 @@ def _get_what_to_read_next(fp, previously_read_position, chunk_size):
     return seek_position, read_size
 
 
-def _remove_trailing_new_line(l):
-    """Remove a single instance of new line at the end of l if it exists.
+def _remove_trailing_new_line(line):
+    """Remove a single instance of new line at the end of line if it exists.
 
     Returns:
         bytestring
@@ -152,10 +152,10 @@ def _remove_trailing_new_line(l):
     # replace only 1 instance of newline
     # match longest line first (hence the reverse=True), we want to match "\r\n" rather than "\n" if we can
     for n in sorted(new_lines_bytes, key=lambda x: len(x), reverse=True):
-        if l.endswith(n):
+        if line.endswith(n):
             remove_new_line = slice(None, -len(n))
-            return l[remove_new_line]
-    return l
+            return line[remove_new_line]
+    return line
 
 
 def _find_furthest_new_line(read_buffer):
