@@ -34,19 +34,7 @@ It supports "\\r", "\\r\\n", and "\\n" as new lines.
 Usage Examples
 --------------
 
-An example of using `file_read_backwards` for `python2.7`::
-
-    #!/usr/bin/env python2.7
-
-    from file_read_backwards import FileReadBackwards
-
-    with FileReadBackwards("/tmp/file", encoding="utf-8") as frb:
-
-        # getting lines by lines starting from the last line up
-        for l in frb:
-            print l
-
-Another example using `python3.4`::
+Another example using `python3.11`::
 
     from file_read_backwards import FileReadBackwards
 
@@ -57,7 +45,7 @@ Another example using `python3.4`::
             print(l)
 
 
-Another way to consume the file is via `readline()`, in `python3.3`::
+Another way to consume the file is via `readline()`, in `python3.11`::
 
     from file_read_backwards import FileReadBackwards
 
