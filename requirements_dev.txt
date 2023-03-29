@@ -1,7 +1,7 @@
 bumpversion==0.6.0
 coverage==7.2.2
 cryptography==40.0.1
-flake8==5.0.4
+flake8==6.0.0
 PyYAML==6.0
 Sphinx==4.3.2
 tox==3.28.0
