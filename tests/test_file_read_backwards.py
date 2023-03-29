@@ -74,19 +74,19 @@ class TestFileReadBackwards(unittest.TestCase):
         f = FileReadBackwards(self.empty_file.name)
         expected_lines = deque()
         lines_read = deque()
-        for l in f:
-            lines_read.appendleft(l)
+        for line in f:
+            lines_read.appendleft(line)
         self.assertEqual(expected_lines, lines_read)
 
     def test_file_with_a_single_new_line_char_with_different_encodings(self):
         """Test a file with a single new line character."""
         for encoding, new_line in itertools.product(supported_encodings, new_lines):
-            temp_file = helper_create_temp_file((l for l in [new_line]), encoding=encoding)
+            temp_file = helper_create_temp_file((line for line in [new_line]), encoding=encoding)
             f = FileReadBackwards(temp_file.name)
             expected_lines = deque([""])
             lines_read = deque()
-            for l in f:
-                lines_read.appendleft(l)
+            for line in f:
+                lines_read.appendleft(line)
             self.assertEqual(
                 expected_lines,
                 lines_read,
@@ -97,23 +97,23 @@ class TestFileReadBackwards(unittest.TestCase):
         b = b'Caf\xc3\xa9'  # accented e in utf-8
         s = b.decode("utf-8")
         for new_line in new_lines:
-            temp_file = helper_create_temp_file((l for l in [s, new_line]))
+            temp_file = helper_create_temp_file((line for line in [s, new_line]))
             f = FileReadBackwards(temp_file.name)
             expected_lines = deque([s])
             lines_read = deque()
-            for l in f:
+            for line in f:
                 lines_read.appendleft(s)
             self.assertEqual(expected_lines, lines_read, msg="Test with {0!r} as newline".format(new_line))
 
     def test_file_with_one_line_of_text_followed_by_a_new_line_with_different_encodings(self):
         """Test a file with just one line of text followed by a new line."""
         for encoding, new_line in itertools.product(supported_encodings, new_lines):
-            temp_file = helper_create_temp_file((l for l in ["something{0}".format(new_line)]), encoding=encoding)
+            temp_file = helper_create_temp_file((line for line in ["something{0}".format(new_line)]), encoding=encoding)
             f = FileReadBackwards(temp_file.name)
             expected_lines = deque(["something"])
             lines_read = deque()
-            for l in f:
-                lines_read.appendleft(l)
+            for line in f:
+                lines_read.appendleft(line)
             self.assertEqual(
                 expected_lines,
                 lines_read,
@@ -125,15 +125,15 @@ class TestFileReadBackwards(unittest.TestCase):
         s = "t"
         for number_of_new_lines in xrange(21):
             for new_line in new_lines:  # test with variety of new lines
-                temp_file = helper_create_temp_file((l for l in [new_line * number_of_new_lines, s * chunk_size]))
+                temp_file = helper_create_temp_file((line for line in [new_line * number_of_new_lines, s * chunk_size]))
                 f = FileReadBackwards(temp_file.name, chunk_size=chunk_size)
                 expected_lines = deque()
                 for _ in xrange(number_of_new_lines):
                     expected_lines.append("")
                 expected_lines.append(s * chunk_size)
                 lines_read = deque()
-                for l in f:
-                    lines_read.appendleft(l)
+                for line in f:
+                    lines_read.appendleft(line)
                 self.assertEqual(
                     expected_lines,
                     lines_read,
@@ -147,15 +147,15 @@ class TestFileReadBackwards(unittest.TestCase):
         s = b.decode("utf-8")
         for number_of_new_lines in xrange(21):
             for new_line in new_lines:  # test with variety of new lines
-                temp_file = helper_create_temp_file((l for l in [new_line * number_of_new_lines, s * chunk_size]))
+                temp_file = helper_create_temp_file((line for line in [new_line * number_of_new_lines, s * chunk_size]))
                 f = FileReadBackwards(temp_file.name, chunk_size=chunk_size)
                 expected_lines = deque()
                 for _ in xrange(number_of_new_lines):
                     expected_lines.append("")
                 expected_lines.append(s * chunk_size)
                 lines_read = deque()
-                for l in f:
-                    lines_read.appendleft(l)
+                for line in f:
+                    lines_read.appendleft(line)
                 self.assertEqual(
                     expected_lines,
                     lines_read,
@@ -171,11 +171,11 @@ class TestFileReadBackwards(unittest.TestCase):
         """Test a file with a single line of text followed by a new line."""
         s = "Line0"
         for new_line in new_lines:
-            temp_file = helper_create_temp_file((l for l in [s, new_line]))
+            temp_file = helper_create_temp_file((line for line in [s, new_line]))
             with FileReadBackwards(temp_file.name) as fp:
-                l = fp.readline()
+                line = fp.readline()
                 expected_line = s + os.linesep
-                self.assertEqual(l, expected_line)
+                self.assertEqual(line, expected_line)
 
                 # the file contains only 1 line
                 second_line = fp.readline()
@@ -189,11 +189,11 @@ class TestFileReadBackwards(unittest.TestCase):
         for new_line in new_lines:
             line0_with_n = "{}{}".format(line0, new_line)
             line1_with_n = "{}{}".format(line1, new_line)
-            temp_file = helper_create_temp_file((l for l in [line0_with_n, line1_with_n]))
+            temp_file = helper_create_temp_file((line for line in [line0_with_n, line1_with_n]))
             with FileReadBackwards(temp_file.name) as fp:
-                l = fp.readline()
+                line = fp.readline()
                 expected_line = line1 + os.linesep
-                self.assertEqual(l, expected_line)
+                self.assertEqual(line, expected_line)
 
                 second_line = fp.readline()
                 expected_second_line = line0 + os.linesep
@@ -217,8 +217,8 @@ class TestFileReadBackwardsAsContextManager(unittest.TestCase):
     def test_behaves_as_classic(self):
         with FileReadBackwards(self.temp_file.name) as f:
             lines_read = deque()
-            for l in f:
-                lines_read.appendleft(l)
+            for line in f:
+                lines_read.appendleft(line)
         f2 = FileReadBackwards(self.temp_file.name)
         lines_read2 = deque()
         for l2 in f2:
