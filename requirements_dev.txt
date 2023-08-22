@@ -6,4 +6,4 @@ PyYAML==6.0.1
 Sphinx==4.3.2  # pyup: ignore, latest version does not work with python 3.7
 tox==3.28.0  # pyup: ignore, latest version does not work with python 3.7
 watchdog==3.0.0
-wheel==0.41.1
+wheel==0.41.2
