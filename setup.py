@@ -18,7 +18,7 @@ test_requirements = [
 
 setup(
     name='file_read_backwards',
-    version='3.0.0',
+    version='3.1.0',
     description="Memory efficient way of reading files line-by-line from the end of file",
     long_description=readme + '\n\n' + history,
     author="Robin Robin",
@@ -45,6 +45,7 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
     test_suite='tests',
     tests_require=test_requirements
