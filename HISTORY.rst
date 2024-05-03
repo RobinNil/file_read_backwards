@@ -53,3 +53,8 @@ Mimicing Python file object behavior.
 ------------------
 
 * Officially support Python 3.7 - 3.11.
+
+3.1.0 (2024-05-02)
+------------------
+
+* Officially support Python 3.7 - 3.12
