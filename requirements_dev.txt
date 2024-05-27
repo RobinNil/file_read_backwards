@@ -1,5 +1,5 @@
 bumpversion==0.6.0
-coverage==7.2.7
+coverage==7.5.2
 cryptography==42.0.7
 flake8==5.0.4  # pyup: ignore, latest version does not with python 3.7
 PyYAML==6.0.1
