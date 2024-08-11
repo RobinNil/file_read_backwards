@@ -5,5 +5,5 @@ flake8==5.0.4  # pyup: ignore, latest version does not with python 3.7
 PyYAML==6.0.1
 Sphinx==4.3.2  # pyup: ignore, latest version does not work with python 3.7
 tox==3.28.0  # pyup: ignore, latest version does not work with python 3.7
-watchdog==3.0.0
+watchdog==4.0.2
 wheel==0.41.1
