@@ -51,19 +51,15 @@ lint: ## check style with flake8
 	flake8 file_read_backwards tests
 
 test: ## run tests quickly with the default Python
-	
-		python setup.py test
+	pytest tests
 
 test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	
-		coverage run --source file_read_backwards setup.py test
-	
-		coverage report -m
-		coverage html
-		$(BROWSER) htmlcov/index.html
+	pytest --cov=file_read_backwards tests
+	coverage html
+	$(BROWSER) htmlcov/index.html
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/file_read_backwards.rst
