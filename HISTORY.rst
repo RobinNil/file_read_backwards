@@ -58,3 +58,9 @@ Mimicing Python file object behavior.
 ------------------
 
 * Officially support Python 3.7 - 3.12
+
+3.2.0 (2025-04-21)
+------------------
+
+* Officially support Python 3.13.
+
