@@ -1,0 +1,14 @@
+name: Safety Check
+# This workflow runs safety to check for vulnerabilities in dependencies
+# It runs on every push to the repository
+# It uses the pyupio/safety-action GitHub Action to run safety
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: pyupio/safety-action@2591cf2f3e67ba68b923f4c92f0d36e281c65023 # v1.0.1
+        with:
+          api-key: ${{ secrets.SAFETY_API_KEY }}
