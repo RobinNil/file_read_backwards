@@ -3,7 +3,7 @@ coverage==7.6.9
 cryptography==44.0.1
 flake8==5.0.4  # pyup: ignore, latest version does not with python 3.7
 PyYAML==6.0.1
-pytest==7.4.0
+pytest==9.0.3
 pytest-mock==3.10.0
 pytest-cov==4.1.0
 Sphinx==4.3.2  # pyup: ignore, latest version does not work with python 3.7
